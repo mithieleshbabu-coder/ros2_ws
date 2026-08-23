@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<robot name="my_robot">
+
+  <!-- ===== CHASSIS =====  box 0.30 x 0.20 x 0.08 m, m = 1.5 kg
+       Ixx = 1/12*m*(y^2+z^2) = 0.005800
+       Iyy = 1/12*m*(x^2+z^2) = 0.012050
+       Izz = 1/12*m*(x^2+y^2) = 0.016250 -->
+  <link name="base_link">
+    <visual>
+      <geometry><box size="0.30 0.20 0.08"/></geometry>
+      <material name="grey"><color rgba="0.4 0.4 0.45 1"/></material>
+    </visual>
+    <collision><geometry><box size="0.30 0.20 0.08"/></geometry></collision>
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.005800" ixy="0" ixz="0" iyy="0.012050" iyz="0" izz="0.016250"/>
+    </inertial>
+  </link>
+
+  <!-- ===== LEFT WHEEL =====  cylinder r = 0.0325 m, h = 0.026 m, m = 0.1 kg
+       Ixx = Iyy = 1/12*m*(3r^2 + h^2) = 3.204e-5
+       Izz = 1/2*m*r^2                 = 5.281e-5 -->
+  <link name="left_wheel">
+    <visual>
+      <geometry><cylinder radius="0.0325" length="0.026"/></geometry>
+      <material name="black"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision><geometry><cylinder radius="0.0325" length="0.026"/></geometry></collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.00003204" ixy="0" ixz="0" iyy="0.00003204" iyz="0" izz="0.00005281"/>
+    </inertial>
+  </link>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin xyz="0 0.11 -0.04" rpy="-1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ===== RIGHT WHEEL =====  identical part, mirrored: y = -0.11 -->
+  <link name="right_wheel">
+    <visual>
+      <geometry><cylinder radius="0.0325" length="0.026"/></geometry>
+      <material name="black"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision><geometry><cylinder radius="0.0325" length="0.026"/></geometry></collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.00003204" ixy="0" ixz="0" iyy="0.00003204" iyz="0" izz="0.00005281"/>
+    </inertial>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin xyz="0 -0.11 -0.04" rpy="-1.5708 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- ===== CASTOR =====  sphere r = 0.02 m, m = 0.05 kg
+       I = 2/5*m*r^2 = 8e-6 on all three axes (spheres are symmetric) -->
+  <link name="castor_wheel">
+    <visual>
+      <geometry><sphere radius="0.02"/></geometry>
+      <material name="black"><color rgba="0.1 0.1 0.1 1"/></material>
+    </visual>
+    <collision><geometry><sphere radius="0.02"/></geometry></collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.000008" ixy="0" ixz="0" iyy="0.000008" iyz="0" izz="0.000008"/>
+    </inertial>
+  </link>
+
+  <joint name="castor_wheel_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="castor_wheel"/>
+    <origin xyz="0.12 0 -0.055" rpy="0 0 0"/>
+  </joint>
+
+</robot>
