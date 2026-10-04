@@ -3,6 +3,26 @@
 Newest first. Each entry: what was run, the result, what surprised us, what it changes.
 Raw numbers live in `results/ledger.jsonl`.
 
+## 004 — output-head quantization — `results/sweep_003_head.log`
+
+Same KV stack. Best configurations so far (wiki / code ppl, bandwidth ceiling 4k b1 / 32k b8):
+
+| weights | head | wiki | code | 4k b1 | 32k b8 |
+|---|---|---|---|---|---|
+| rtn@8/128 | fp16 | 16.40 | 4.81 | ×1.59 | ×3.18 |
+| rtn@8/128 | rtn@8/128 | 16.39 | 4.81 | **×2.00** | ×3.53 |
+| rtn@8/128 | rtn@4/128 | 17.66 | 5.03 | ×2.30 | ×3.75 |
+| rtn@5/128 | rtn@8/128 | 17.24 | 5.07 | **×2.69** | ×3.98 |
+| rtn@5/128 | rtn@4/128 | 18.53 | 5.30 | ×3.26 | ×4.25 |
+| rtn@4/128 | fp16 | 19.65 | 5.76 | ×2.19 | ×3.68 |
+
+- An 8-bit head is free and takes the 8-bit-weight stack from ×1.59 to ×2.00.
+- `w5 + head8` is better on both axes than `w4 + fp16 head`: the cheapest bytes were in the part
+  nobody quantized, not in pushing the decoder layers lower. A small "stacking" result:
+  the right allocation beats more aggressive compression.
+- 4-bit head costs ~0.075 nats; the head is more sensitive than decoder weights at equal bits.
+- Next: rotated (incoherent) weight quantization, the standard fix for RTN outliers (005, running).
+
 ## 003 — weight-precision sweep, KV stack fixed — `results/sweep_002_weights.log`
 
 KV stack fixed at `keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32` (KV only: wiki 16.367).

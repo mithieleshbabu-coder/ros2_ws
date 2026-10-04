@@ -7,6 +7,9 @@ Slot        syntax                 meaning
 keys        <coder>@<bits>         key-cache coder from kv-transform-coding/coders.py, or kivi
 values      tok@<bits>/<group>     per-token asymmetric uniform quantization, groups of channels
 weights     rtn@<bits>/<group>     group-wise round-to-nearest on all decoder Linear layers
+            rot@<bits>/<group>     same after a random orthogonal rotation of the input dimension
+                                   (QuIP/QuaRot-style incoherence; at deployment the matching rotation
+                                   is applied to activations or fused into the previous layer)
 head        rtn@<bits>/<group>     same for the output projection (tied with the input embedding in Qwen)
 sink        <n>                    first n tokens keep full-precision K and V
 recent      <r>                    K/V of the r most recent tokens stay full precision
@@ -55,6 +58,25 @@ def quant_groups(x, b, group):
     return (torch.round((G - lo) / s) * s + lo).reshape(shp)
 
 
+_ROT = {}
+
+
+def rotation(n):
+    """Fixed random orthogonal n x n matrix (one per input size, seeded)."""
+    if n not in _ROT:
+        g = torch.Generator().manual_seed(n)
+        q, r = torch.linalg.qr(torch.randn(n, n, generator=g))
+        _ROT[n] = q * torch.sign(torch.diag(r))
+    return _ROT[n]
+
+
+def quant_weight(W, b, g, kind):
+    if kind == "rot":
+        R = rotation(W.shape[1])
+        return quant_groups(W @ R, b, g) @ R.T
+    return quant_groups(W, b, g)
+
+
 class Stack:
     def __init__(self, spec=""):
         self.spec = spec.strip()
@@ -74,8 +96,9 @@ class Stack:
             elif slot in ("weights", "head"):
                 kind, rest = arg.split("@")
                 b, g = rest.split("/")
-                assert kind == "rtn"
+                assert kind in ("rtn", "rot")
                 setattr(self, slot, (int(b), int(g)))
+                setattr(self, slot + "_kind", kind)
             elif slot in ("sink", "recent", "window"):
                 setattr(self, slot, int(arg))
             else:
@@ -108,9 +131,9 @@ class Stack:
                 for layer in model.model.layers:
                     for m in layer.modules():
                         if isinstance(m, torch.nn.Linear):
-                            m.weight.copy_(quant_groups(m.weight, b, g))
+                            m.weight.copy_(quant_weight(m.weight, b, g, self.weights_kind))
             if self.head:  # if tied, this also quantizes the input embedding (same stored matrix)
-                model.lm_head.weight.copy_(quant_groups(model.lm_head.weight, *self.head))
+                model.lm_head.weight.copy_(quant_weight(model.lm_head.weight, *self.head, self.head_kind))
 
     def make_key_coder(self, Ktr, Qtr):
         return KEY_CODERS[self.keys[0]][0](self.keys[1])(Ktr, Qtr)
