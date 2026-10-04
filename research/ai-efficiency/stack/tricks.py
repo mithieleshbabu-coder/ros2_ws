@@ -167,10 +167,10 @@ class Stack:
                            if isinstance(m, torch.nn.Linear)]
                 if kind in ("gptq", "rgptq"):
                     H = {m: torch.zeros(m.in_features, m.in_features) for m in linears}
-                    hooks = [m.register_forward_hook(
-                        lambda mod, inp, out: H[mod].add_(inp[0].reshape(-1, mod.in_features).T.float()
-                                                          @ inp[0].reshape(-1, mod.in_features).float()))
-                        for m in linears]
+                    def accumulate(mod, inp, out):  # must return None, or it replaces the layer output
+                        x = inp[0].reshape(-1, mod.in_features).float()
+                        H[mod].add_(x.T @ x)
+                    hooks = [m.register_forward_hook(accumulate) for m in linears]
                     for x in calib:
                         model(x[None])
                     for h in hooks:
