@@ -10,6 +10,9 @@ weights     rtn@<bits>/<group>     group-wise round-to-nearest on all decoder Li
             rot@<bits>/<group>     same after a random orthogonal rotation of the input dimension
                                    (QuIP/QuaRot-style incoherence; at deployment the matching rotation
                                    is applied to activations or fused into the previous layer)
+            gptq@<bits>/<group>    GPTQ: column-by-column rounding with Hessian-based error feedback,
+                                   Hessians from the calibration set (one fp pass, not sequential)
+            rgptq@<bits>/<group>   GPTQ in the rotated basis
 head        rtn@<bits>/<group>     same for the output projection (tied with the input embedding in Qwen)
 sink        <n>                    first n tokens keep full-precision K and V
 recent      <r>                    K/V of the r most recent tokens stay full precision
@@ -77,6 +80,36 @@ def quant_weight(W, b, g, kind):
     return quant_groups(W, b, g)
 
 
+def gptq(W, H, b, g, block=128, damp=0.01):
+    """GPTQ (Frantar et al. 2022) with asymmetric group-wise grids; returns the dequantized weight.
+    W: (out, in), H: (in, in) = sum of x x^T over calibration inputs. g must divide block."""
+    W = W.clone().float()
+    H = H.clone().float()
+    dead = torch.diag(H) == 0
+    H[dead, dead] = 1
+    W[:, dead] = 0
+    H += damp * torch.diag(H).mean() * torch.eye(len(H))
+    U = torch.linalg.cholesky(torch.cholesky_inverse(torch.linalg.cholesky(H)), upper=True)
+    Q = torch.zeros_like(W)
+    n = W.shape[1]
+    for i1 in range(0, n, block):
+        i2 = min(i1 + block, n)
+        W1, Err = W[:, i1:i2].clone(), torch.zeros(W.shape[0], i2 - i1)
+        for i in range(i2 - i1):
+            if i % g == 0:  # grid for the next group, from the error-updated weights
+                grp = W1[:, i:i + g]
+                lo, hi = grp.amin(1), grp.amax(1)
+                sc = (hi - lo).clamp_min(1e-8) / (2 ** b - 1)
+            w, d = W1[:, i], U[i1 + i, i1 + i]
+            q = torch.round((w - lo) / sc).clamp(0, 2 ** b - 1) * sc + lo
+            Q[:, i1 + i] = q
+            e = (w - q) / d
+            W1[:, i:] -= e[:, None] * U[i1 + i, i1 + i:i2][None, :]
+            Err[:, i] = e
+        W[:, i2:] -= Err @ U[i1:i2, i2:]
+    return Q
+
+
 class Stack:
     def __init__(self, spec=""):
         self.spec = spec.strip()
@@ -96,7 +129,7 @@ class Stack:
             elif slot in ("weights", "head"):
                 kind, rest = arg.split("@")
                 b, g = rest.split("/")
-                assert kind in ("rtn", "rot")
+                assert kind in ("rtn", "rot", "gptq", "rgptq")
                 setattr(self, slot, (int(b), int(g)))
                 setattr(self, slot + "_kind", kind)
             elif slot in ("sink", "recent", "window"):
@@ -124,15 +157,36 @@ class Stack:
         return self.head[0] + 2 * FP_BITS / self.head[1] if self.head else FP_BITS
 
     # ---- application ----
-    def apply_weights(self, model):
+    def apply_weights(self, model, calib=None):
+        """calib: (n, seq) token ids; needed for gptq/rgptq (Hessians from one fp forward pass)."""
         with torch.no_grad():
             if self.weights:
                 b, g = self.weights
-                for layer in model.model.layers:
-                    for m in layer.modules():
-                        if isinstance(m, torch.nn.Linear):
-                            m.weight.copy_(quant_weight(m.weight, b, g, self.weights_kind))
+                kind = self.weights_kind
+                linears = [m for layer in model.model.layers for m in layer.modules()
+                           if isinstance(m, torch.nn.Linear)]
+                if kind in ("gptq", "rgptq"):
+                    H = {m: torch.zeros(m.in_features, m.in_features) for m in linears}
+                    hooks = [m.register_forward_hook(
+                        lambda mod, inp, out: H[mod].add_(inp[0].reshape(-1, mod.in_features).T.float()
+                                                          @ inp[0].reshape(-1, mod.in_features).float()))
+                        for m in linears]
+                    for x in calib:
+                        model(x[None])
+                    for h in hooks:
+                        h.remove()
+                    for m in linears:
+                        if kind == "rgptq":
+                            R = rotation(m.in_features)
+                            m.weight.copy_(gptq(m.weight @ R, R.T @ H[m] @ R, b, g) @ R.T)
+                        else:
+                            m.weight.copy_(gptq(m.weight, H[m], b, g))
+                        del H[m]
+                else:
+                    for m in linears:
+                        m.weight.copy_(quant_weight(m.weight, b, g, kind))
             if self.head:  # if tied, this also quantizes the input embedding (same stored matrix)
+                assert self.head_kind in ("rtn", "rot"), "head supports rtn/rot"
                 model.lm_head.weight.copy_(quant_weight(model.lm_head.weight, *self.head, self.head_kind))
 
     def make_key_coder(self, Ktr, Qtr):

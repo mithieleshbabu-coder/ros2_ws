@@ -140,7 +140,8 @@ def run(spec):
     st = Stack(spec)
     model = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.float32).eval()
     model.set_attn_implementation("stack")
-    st.apply_weights(model)
+    S["stack"], S["mode"] = Stack(), "eval"  # weight calibration always sees the uncompressed KV path
+    st.apply_weights(model, CALIB)
     S["stack"] = st
     if st.keys:
         S["mode"], S["store"] = "capture", {}
