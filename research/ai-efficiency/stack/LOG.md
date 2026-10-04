@@ -3,6 +3,23 @@
 Newest first. Each entry: what was run, the result, what surprised us, what it changes.
 Raw numbers live in `results/ledger.jsonl`.
 
+## 005 — rotated (incoherent) weight quantization — `results/sweep_005_rot.log`
+
+Head rtn@8/128 and KV stack fixed.
+
+| weights | wiki | code | 4k b1 | 32k b8 |
+|---|---|---|---|---|
+| rtn@5/128 | 17.24 | 5.07 | ×2.69 | ×3.98 |
+| rot@8/128 | 16.38 | 4.82 | ×2.00 | ×3.53 |
+| rot@5/128 | **16.88** | **5.00** | ×2.69 | ×3.98 |
+| rot@4/128 | 18.72 | 5.43 | ×3.04 | ×4.16 |
+| rot@3/128 | 43.89 | 11.80 | ×3.50 | ×4.35 |
+
+- Rotation helps at 5 bits (17.24 → 16.88 for the same bytes). The plain-RTN 4/128 run had an fp16
+  head, so it isn't directly comparable to rot@4; GPTQ (006) gives the direct comparison.
+- 3 bits still collapses even with rotation; that's what GPTQ's error feedback is for.
+- Added `gptq` / `rgptq` weight kinds (unit test: half of RTN's output error at 3/4/8 bits).
+
 ## 004 — output-head quantization — `results/sweep_003_head.log`
 
 Same KV stack. Best configurations so far (wiki / code ppl, bandwidth ceiling 4k b1 / 32k b8):
