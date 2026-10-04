@@ -36,7 +36,7 @@ Metrics
   R@10     recall of the true top-10 keys by q.k among 50k     (higher is better)
   attn-err ||o - o_hat|| / ||o||, softmax attention over 2048-key contexts (lower is better)
 """
-import json, math
+import json
 import numpy as np
 import torch
 
@@ -46,119 +46,8 @@ torch.set_num_threads(4)
 BITS = [1, 2, 3, 4]
 
 
-# ---------- Lloyd-Max codebooks for N(0,1) ----------
-def lloyd_max(b, n=2_000_000, iters=200):
-    x = np.sort(np.random.randn(n))
-    c = np.quantile(x, (np.arange(2 ** b) + 0.5) / 2 ** b)
-    for _ in range(iters):
-        edges = (c[1:] + c[:-1]) / 2
-        idx = np.searchsorted(edges, x)
-        c = np.bincount(idx, x, 2 ** b) / np.bincount(idx, minlength=2 ** b)
-    edges = (c[1:] + c[:-1]) / 2
-    mse = np.mean((x - c[np.searchsorted(edges, x)]) ** 2)
-    return torch.tensor(c, dtype=torch.float32), torch.tensor(edges, dtype=torch.float32), mse
+from coders import METHODS, quant  # noqa: E402
 
-
-CB = {b: lloyd_max(b) for b in range(1, 9)}
-UNIT_MSE = [1.0] + [CB[b][2] for b in range(1, 9)]  # distortion of a unit-variance coord at b bits
-
-
-def quant(z, b):
-    """Lloyd-Max quantize a tensor of ~N(0,1) values at b bits (b=0 -> 0)."""
-    if b == 0:
-        return torch.zeros_like(z)
-    c, e, _ = CB[b]
-    return c[torch.bucketize(z, e)]
-
-
-# ---------- methods: fit(K_train, Q_train) -> encode(K) -> scorer(Q) ----------
-def rand_orth(D, seed):
-    g = torch.Generator().manual_seed(seed)
-    q, r = torch.linalg.qr(torch.randn(D, D, generator=g))
-    return q * torch.sign(torch.diag(r))
-
-
-def turbo_mse(b):
-    def fit(Ktr, Qtr):
-        D = Ktr.shape[1]
-        R = rand_orth(D, 1)
-        def enc(K):
-            n = K.norm(dim=1, keepdim=True)
-            z = (K / n) @ R * math.sqrt(D)  # coords ~ N(0,1)
-            return (quant(z, b) / math.sqrt(D)) @ R.T * n
-        return enc
-    return fit
-
-
-def turbo_prod(b):
-    def fit(Ktr, Qtr):
-        D = Ktr.shape[1]
-        mse_enc = turbo_mse(b - 1)(Ktr, Qtr) if b > 1 else (lambda K: torch.zeros_like(K))
-        S = torch.randn(D, D, generator=torch.Generator().manual_seed(2))
-        def enc(K):
-            Kh = mse_enc(K)
-            r = K - Kh
-            return Kh, torch.sign(r @ S.T), r.norm(dim=1)
-        def score(Q, code):
-            Kh, sg, rn = code
-            qjl = math.sqrt(math.pi / 2) / D * (Q @ S.T) @ sg.T * rn[None]
-            return Q @ Kh.T + qjl
-        enc.score = score
-        return enc
-    return fit
-
-
-def allocate(lam, total, cap=8):
-    """Greedy marginal-return bit allocation (optimal for convex per-coord distortion)."""
-    bits = np.zeros(len(lam), dtype=int)
-    for _ in range(total):
-        gain = np.array([lam[i] * (UNIT_MSE[bits[i]] - UNIT_MSE[bits[i] + 1]) if bits[i] < cap else -1
-                         for i in range(len(lam))])
-        bits[gain.argmax()] += 1
-    return bits
-
-
-def transform_code(b, query_aware, waterfill, gain_shape=False):
-    def fit(Ktr, Qtr):
-        if gain_shape:  # code the direction k/||k|| with the transform coder, store ||k|| separately
-            inner = transform_code(b, query_aware, waterfill)(Ktr / Ktr.norm(dim=1, keepdim=True), Qtr)
-            def enc(K):
-                n = K.norm(dim=1, keepdim=True)
-                return inner(K / n) * n
-            enc.bits = inner.bits
-            return enc
-        D = Ktr.shape[1]
-        if query_aware:
-            C = Qtr.T @ Qtr / len(Qtr) + 1e-6 * torch.eye(D)
-            ev, U = torch.linalg.eigh(C)
-            W = U @ torch.diag(ev.sqrt()) @ U.T       # C_q^{1/2}
-            Winv = U @ torch.diag(1 / ev.sqrt()) @ U.T
-        else:
-            W = Winv = torch.eye(D)
-        Kp = Ktr @ W
-        mu = Kp.mean(0)
-        lam, V = torch.linalg.eigh(torch.cov((Kp - mu).T))
-        lam = lam.clamp_min(1e-12)
-        bits = allocate(lam.numpy(), b * D) if waterfill else np.full(D, b)
-        sd = lam.sqrt()
-        def enc(K):
-            z = ((K @ W - mu) @ V) / sd
-            zq = torch.stack([quant(z[:, i], int(bits[i])) for i in range(D)], 1)
-            return ((zq * sd) @ V.T + mu) @ Winv
-        enc.bits = bits
-        return enc
-    return fit
-
-
-METHODS = {
-    "turbo-mse": turbo_mse,
-    "turbo-prod": turbo_prod,
-    "klt-unif": lambda b: transform_code(b, False, False),
-    "klt-wf": lambda b: transform_code(b, False, True),
-    "qa-unif": lambda b: transform_code(b, True, False),
-    "qa-wf": lambda b: transform_code(b, True, True),
-    "qa-wf-gs": lambda b: transform_code(b, True, True, gain_shape=True),
-}
 import os
 if os.environ.get("METHODS"):
     METHODS = {k: METHODS[k] for k in os.environ["METHODS"].split(",")}
