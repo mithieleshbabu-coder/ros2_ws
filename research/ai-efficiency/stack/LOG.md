@@ -3,6 +3,29 @@
 Newest first. Each entry: what was run, the result, what surprised us, what it changes.
 Raw numbers live in `results/ledger.jsonl`.
 
+## 003 — weight-precision sweep, KV stack fixed — `results/sweep_002_weights.log`
+
+KV stack fixed at `keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32` (KV only: wiki 16.367).
+
+| weights | wiki | code | ceiling 4k b1 | ceiling 32k b8 |
+|---|---|---|---|---|
+| fp16 | 16.37 | 4.81 | ×1.04 | ×2.52 |
+| rtn@8/128 | 16.40 | 4.81 | ×1.59 | ×3.18 |
+| rtn@6/128 | 16.58 | 4.87 | ×1.84 | ×3.41 |
+| rtn@5/128 | 17.24 | 5.07 | ×2.00 | ×3.54 |
+| rtn@4/32 | 18.05 | 5.29 | ×2.05 | ×3.57 |
+| rtn@4/128 | 19.65 | 5.76 | ×2.19 | ×3.68 |
+| rtn@3/32 | 30.01 | 8.26 | ×2.25 | ×3.71 |
+
+- 8-bit RTN is free; quality falls off fast below 5 bits; 3-bit RTN collapses.
+- **Surprise:** even 8-bit weights only reach ×1.59 at 4k b1. The output projection (vocab 151,936 ×
+  896 ≈ 136M params, ~27% of the model, tied with the input embedding) stays fp16 and is read in full
+  every decode step. For small models with big vocabularies the output head is a hidden bottleneck,
+  and quantizing the decoder layers harder buys little: 4 → 3 bits gains only ×2.19 → ×2.25.
+- **Changes:** added a `head` slot (output-projection quantization) and fixed the byte accounting so
+  the head and the input-embedding lookup are counted separately (equivalent for tied models, so old
+  entries stay comparable). Test 004 is running.
+
 ## 002 — first stack, leave-one-out ablation (Qwen2.5-0.5B) — `results/ablation_001.log`
 
 Stack `weights=rtn@4/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32`:

@@ -109,11 +109,14 @@ def bytes_model(st, model):
     D = getattr(cfg, "head_dim", None) or cfg.hidden_size // cfg.num_attention_heads
     lin = sum(m.weight.numel() for layer in model.model.layers for m in layer.modules()
               if isinstance(m, torch.nn.Linear))
-    other = sum(p.numel() for p in model.parameters()) - lin
+    head = model.lm_head.weight.numel()  # read in full every decode step for the logits
+    # input embedding: only one row per token is read, unless it is a separate untied matrix (still ~0 traffic)
+    other = sum(p.numel() for p in model.parameters()) - lin - head
+    other_traffic = sum(p.numel() for n, p in model.named_parameters() if "norm" in n or "bias" in n)
     out = {}
     for name, (C, Bt) in SERVING_POINTS.items():
         def step_bytes(s):
-            w = lin * s.weight_bits() / 8 + other * FP_BITS / 8
+            w = lin * s.weight_bits() / 8 + head * s.head_bits() / 8 + other_traffic * FP_BITS / 8
             n = min(C, s.sink + s.window) if s.window else C
             n_fp = min(n, s.sink + s.recent)
             per_tok_q = L * Hkv * D * (s.key_bits(D) + s.value_bits()) / 8

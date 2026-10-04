@@ -7,6 +7,7 @@ Slot        syntax                 meaning
 keys        <coder>@<bits>         key-cache coder from kv-transform-coding/coders.py, or kivi
 values      tok@<bits>/<group>     per-token asymmetric uniform quantization, groups of channels
 weights     rtn@<bits>/<group>     group-wise round-to-nearest on all decoder Linear layers
+head        rtn@<bits>/<group>     same for the output projection (tied with the input embedding in Qwen)
 sink        <n>                    first n tokens keep full-precision K and V
 recent      <r>                    K/V of the r most recent tokens stay full precision
 window      <w>                    evict everything except sink + last w tokens (StreamingLLM); 0 = off
@@ -57,7 +58,7 @@ def quant_groups(x, b, group):
 class Stack:
     def __init__(self, spec=""):
         self.spec = spec.strip()
-        self.keys = self.values = self.weights = None
+        self.keys = self.values = self.weights = self.head = None
         self.sink = self.recent = self.window = 0
         for tok in self.spec.split():
             slot, arg = tok.split("=", 1)
@@ -70,11 +71,11 @@ class Stack:
                 b, g = rest.split("/")
                 assert kind == "tok"
                 self.values = (int(b), int(g))
-            elif slot == "weights":
+            elif slot in ("weights", "head"):
                 kind, rest = arg.split("@")
                 b, g = rest.split("/")
                 assert kind == "rtn"
-                self.weights = (int(b), int(g))
+                setattr(self, slot, (int(b), int(g)))
             elif slot in ("sink", "recent", "window"):
                 setattr(self, slot, int(arg))
             else:
@@ -96,16 +97,20 @@ class Stack:
     def weight_bits(self):
         return self.weights[0] + 2 * FP_BITS / self.weights[1] if self.weights else FP_BITS
 
+    def head_bits(self):
+        return self.head[0] + 2 * FP_BITS / self.head[1] if self.head else FP_BITS
+
     # ---- application ----
     def apply_weights(self, model):
-        if not self.weights:
-            return
-        b, g = self.weights
         with torch.no_grad():
-            for layer in model.model.layers:
-                for m in layer.modules():
-                    if isinstance(m, torch.nn.Linear):
-                        m.weight.copy_(quant_groups(m.weight, b, g))
+            if self.weights:
+                b, g = self.weights
+                for layer in model.model.layers:
+                    for m in layer.modules():
+                        if isinstance(m, torch.nn.Linear):
+                            m.weight.copy_(quant_groups(m.weight, b, g))
+            if self.head:  # if tied, this also quantizes the input embedding (same stored matrix)
+                model.lm_head.weight.copy_(quant_groups(model.lm_head.weight, *self.head))
 
     def make_key_coder(self, Ktr, Qtr):
         return KEY_CODERS[self.keys[0]][0](self.keys[1])(Ktr, Qtr)
