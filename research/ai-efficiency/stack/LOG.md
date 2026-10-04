@@ -3,6 +3,40 @@
 Newest first. Each entry: what was run, the result, what surprised us, what it changes.
 Raw numbers live in `results/ledger.jsonl`.
 
+## 006 — GPTQ weights — `results/sweep_006_gptq.log`
+
+Head rtn@8/128 and KV stack fixed. Calibration: 16 × 512 WikiText-2 train tokens.
+
+| weights | wiki | code | 4k b1 | 32k b8 |
+|---|---|---|---|---|
+| rot@4/128 | 18.72 | 5.43 | ×3.04 | ×4.16 |
+| gptq@4/128 | 18.36 | **5.93** | ×3.04 | ×4.16 |
+| **rgptq@4/128** | **17.30** | **5.29** | ×3.04 | ×4.16 |
+| rot@3/128 | 43.89 | 11.80 | ×3.50 | ×4.35 |
+| gptq@3/128 | 34.05 | **29.02** | ×3.50 | ×4.35 |
+| rgptq@3/128 | 21.99 | 9.93 | ×3.50 | ×4.35 |
+
+- **Rotation + GPTQ stack**: 4-bit rgptq matches 5-bit RTN-quality (17.30 vs 17.24 wiki) for ×3.04
+  instead of ×2.69.
+- **GPTQ alone overfits the calibration domain.** Calibrated on Wikipedia, it improves Wikipedia
+  but makes code *worse* than plain rotation at 4 bits (5.93 vs 5.43), and at 3 bits code
+  collapses (29.0) while Wikipedia doesn't. Rotation removes most of this. Direct evidence for
+  assumption 2 ("calibrate once"): error feedback fitted on one domain moves error onto others.
+  The calibration set is small (8k tokens), so part of this is the known need for more and more
+  diverse calibration data; the next test mixes domains.
+- 3-bit weights are still not usable on a 0.5B model with any method here.
+- Process failure: the first launch crashed on a hook bug and a watcher waited 2 h on its own
+  process name. New rule: smoke-test every new trick (8-bit ≈ fp) before a sweep.
+
+### Best frontier so far (Qwen2.5-0.5B, all with KV stack keys3/values3/sink/recent32)
+
+| config | wiki | code | ceiling 4k b1 | ceiling 32k b8 |
+|---|---|---|---|---|
+| fp16 | 16.14 | 4.77 | ×1.00 | ×1.00 |
+| w rtn8 + head8 | 16.39 | 4.81 | ×2.00 | ×3.53 |
+| w rot5 + head8 | 16.88 | 5.00 | ×2.69 | ×3.98 |
+| w rgptq4 + head8 | 17.30 | 5.29 | ×3.04 | ×4.16 |
+
 ## 005 — rotated (incoherent) weight quantization — `results/sweep_005_rot.log`
 
 Head rtn@8/128 and KV stack fixed.
