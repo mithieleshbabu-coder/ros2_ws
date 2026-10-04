@@ -1,0 +1,1 @@
+weights=rtn@4/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  19.647  code  5.755  ceiling x2.19 (4k,b1)  x3.68 (32k,b8)
