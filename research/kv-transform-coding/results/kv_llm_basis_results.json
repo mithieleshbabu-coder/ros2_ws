@@ -1,0 +1,100 @@
+[
+ {
+  "eval": "wiki",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 16.134795372568664,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "code",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 4.767159076848616,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "wiki",
+  "method": "kbasis-qw",
+  "bits": 2,
+  "ppl": 18.419788247410494,
+  "attn_err": 0.220547909848392
+ },
+ {
+  "eval": "code",
+  "method": "kbasis-qw",
+  "bits": 2,
+  "ppl": 5.79885133648247,
+  "attn_err": 0.2917973673902452
+ },
+ {
+  "eval": "wiki",
+  "method": "qbasis-qw",
+  "bits": 2,
+  "ppl": 18.283881264035127,
+  "attn_err": 0.21349006930055717
+ },
+ {
+  "eval": "code",
+  "method": "qbasis-qw",
+  "bits": 2,
+  "ppl": 5.65859478751844,
+  "attn_err": 0.2704544346779585
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 17.94826515237039,
+  "attn_err": 0.18630493180050203
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 5.6759541042286745,
+  "attn_err": 0.26466287614312023
+ },
+ {
+  "eval": "wiki",
+  "method": "kbasis-qw",
+  "bits": 3,
+  "ppl": 16.780137302466006,
+  "attn_err": 0.11846320431989928
+ },
+ {
+  "eval": "code",
+  "method": "kbasis-qw",
+  "bits": 3,
+  "ppl": 5.039579612736819,
+  "attn_err": 0.1725092068857824
+ },
+ {
+  "eval": "wiki",
+  "method": "qbasis-qw",
+  "bits": 3,
+  "ppl": 16.692419067170412,
+  "attn_err": 0.10946516391898815
+ },
+ {
+  "eval": "code",
+  "method": "qbasis-qw",
+  "bits": 3,
+  "ppl": 4.970731385304726,
+  "attn_err": 0.14344241423532367
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 16.659173274449206,
+  "attn_err": 0.0984668130792367
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 5.005006017597752,
+  "attn_err": 0.15502344456035644
+ }
+]

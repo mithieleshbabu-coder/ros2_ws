@@ -97,16 +97,95 @@ Full results (including the uniform-bit ablations) are in `results/kv_results.js
 - TurboQuant needs no calibration; `qa-wf-gs` needs per-head calibration queries and keys and can suffer from drift.
 - Variable bit-widths per coordinate are harder to implement efficiently on GPUs; not measured.
 
-### Related work (read before claiming novelty)
+## Experiment 3: the same coders inside real LLMs — `kv_llm_bench.py`
 
-- MixKVQ (ACL 2026), query-aware mixed-precision key quantization, per original channel: https://arxiv.org/abs/2512.19206
-- KQ-SVD (AISTATS 2026), query-aware low-rank key compression: https://arxiv.org/abs/2512.05916
+Post-RoPE keys and queries are captured per layer and KV head on WikiText-2 train, every coder
+is fitted per head, and perplexity is measured with **keys** quantized inside the forward pass
+(values full precision). Test sets: WikiText-2 test (in-domain) and Python stdlib source
+(domain shift). Every method spends `b·d_head + 16` bits per key. The first token (attention
+sink) is kept in full precision for all methods (`--keep-sink`), as OSCAR and RotateKV do.
+
+Baselines: `kivi` (per-channel uniform, min/max per 128-token group — 0.25 bits/value overhead),
+`turbo-c` (TurboQuant-style random rotation + Lloyd-Max + stored norm, on mean-centred keys),
+`kbasis-qw` (key-PCA basis + query-weighted water-filling, AATC-style),
+`qbasis-qw` (query-covariance eigenbasis + query-weighted water-filling, OSCAR-style rotation).
+
+### Qwen2.5-0.5B (head_dim 64, 32×512 eval tokens per domain) — perplexity
+
+| method | 2b wiki | 2b code | 3b wiki | 3b code | 4b wiki | 4b code |
+|---|---|---|---|---|---|---|
+| fp32 | 16.14 | 4.77 | | | | |
+| kivi | 36.79 | 9.15 | 17.14 | 5.12 | 16.34 | **4.835** |
+| turbo-c | 199.9 | 41.08 | 46.84 | 10.52 | 22.63 | 5.85 |
+| klt-wf | 19.58 | 6.13 | 17.23 | 5.19 | 16.52 | 4.90 |
+| kbasis-qw (AATC-style) | 18.42 | 5.80 | 16.78 | 5.04 | | |
+| qbasis-qw (OSCAR-style) | 18.28 | **5.66** | 16.69 | **4.97** | | |
+| qa-wf (joint basis) | **17.95** | 5.68 | **16.66** | 5.005 | **16.32** | 4.846 |
+| qa-wf-gs | 18.80 | 5.93 | 16.88 | 5.05 | 16.39 | 4.851 |
+
+### Qwen2.5-1.5B (head_dim 128, 16×512 eval tokens per domain) — perplexity
+
+| method | 2b wiki | 2b code | 3b wiki | 3b code |
+|---|---|---|---|---|
+| fp32 | 14.30 | 3.68 | | |
+| kivi | 18.70 | 4.88 | **14.73** | 3.83 |
+| turbo-c | 17.59 | 4.59 | 14.90 | 3.85 |
+| klt-wf | 18.28 | 4.27 | 15.70 | 3.88 |
+| kbasis-qw (AATC-style) | 16.94 | 4.32 | 14.86 | 3.84 |
+| qbasis-qw (OSCAR-style) | 19.44 | **4.24** | 18.18 | **3.77** |
+| qa-wf (joint basis) | 19.99 | 4.36 | 19.41 | 3.84 |
+| **qa-wf-gs** | **15.88** | 4.50 | 14.85 | 3.87 |
+
+Logs: `results/kv_llm_*_run.log`. Without the sink kept (`results/kv_llm_run.log`) every
+calibrated coder hits an error floor (e.g. qa-wf stuck at ~45 ppl from 2 to 4 bits on 0.5B),
+because a fixed calibrated range clips the huge sink key; KIVI's dynamic ranges survive it.
+
+### Findings
+
+1. **Data-aware transform coding is a big win at 2 bits.** On 0.5B it halves KIVI's 2-bit
+   perplexity gap; on 1.5B the norm-storing variant has the best 2-bit WikiText perplexity
+   (15.88 vs 16.94–19.99 for the others).
+2. **Robustness to outlier tokens matters as much as the transform.** Keeping the sink token in
+   full precision removed the error floor on 0.5B. On 1.5B, `qa-wf` and `qbasis-qw` still
+   plateau on WikiText (19.4 and 18.2 at 3 bits) while having low attention error — consistent
+   with a few remaining outlier tokens being clipped. Storing the norm (`qa-wf-gs`) fixes it
+   (19.41 → 14.85 at 3 bits).
+3. **The rotation choice matters little once bits are allocated with query weighting.** Joint,
+   key-PCA and query-covariance bases are within ~2% of each other on 0.5B; no basis wins on both
+   domains on either model.
+4. **At 3–4 bits everything reasonable is near-lossless**; the action is at 2 bits.
+5. **TurboQuant-style coding is bad on head_dim 64 and competitive on head_dim 128**, matching
+   where TurboQuant reports results.
+
+### Caveats
+
+- Two small models from one family, perplexity only, 512-token contexts, one calibration seed.
+  Differences of ~1–2% are likely within noise; no long-context or downstream-task evaluation.
+- Only keys are quantized. No speed measurements (variable per-coordinate bit widths and full
+  rotations need GPU kernels).
+- `turbo-*` are reimplementations of TurboQuant's core idea, not Google's code.
+
+### Related work — this direction is already active
+
+- **KVTC** (ICLR 2026): PCA + DP bit allocation + entropy coding for KV caches (= idea #1).
+- **OSCAR** (arXiv 2605.17757): rotation from the query covariance `QᵀQ`, sink/recent tokens kept
+  in BF16, uniform INT2; reports large wins over TurboQuant (= idea #2 and our sink fix).
+- **AATC** (arXiv 2608.14191): key-PCA + query-weighted reverse water-filling (≈ idea #1+#2); notes
+  that combining OSCAR's rotation with channel-wise allocation is open.
+- MixKVQ (ACL 2026), KQ-SVD (AISTATS 2026), SVDq (2025), RateQuant (2026), WUSH-KV (2026).
+
+What may be left: the joint basis (eigenbasis of `C_q^{1/2} C_k C_q^{1/2}`, which makes the
+query-weighted error exactly diagonal) combined with gain-shape coding. The basis gain is small
+here; the gain-shape robustness result on 1.5B is the more interesting finding, and needs larger
+models, more seeds and long-context tasks before it means anything.
 
 ### Next steps
 
-1. Real per-head K/Q from a small open LLM (needs Hugging Face access).
-2. Add MixKVQ and KQ-SVD as baselines.
-3. Proper calibration-drift test (calibrate on one domain, evaluate on another).
+1. Larger models (7–8B) and long-context evaluation (RULER / LongBench) — needs a GPU.
+2. Seeds / more eval tokens to put error bars on the 1–2% differences.
+3. A principled outlier-token fix (per-token scale as in AATC, or detect-and-keep outliers)
+   instead of storing the norm, and compare against OSCAR's sink+recent window.
+4. Quantize values too and report total KV bits.
 
 ## Reproduce
 
@@ -115,5 +194,7 @@ pip install -r requirements.txt
 python prepare_data.py            # downloads GloVe 300d (~390 MB), writes glove120k.npy
 python maxplus_bench.py --steps 1500 --batch 512 --seeds 0,1 --out results/maxplus_results.json   # ~35 min CPU
 python kvquant_bench.py           # all four scenarios, ~6 min CPU
+python kv_llm_bench.py --n-calib 32 --n-eval 32 --keep-sink      # Qwen2.5-0.5B, ~30 min CPU
+python kv_llm_bench.py --model Qwen/Qwen2.5-1.5B --n-calib 16 --n-eval 16 --bits 2,3 --keep-sink
 METHODS=turbo-mse,qa-wf-gs python kvquant_bench.py synth-head   # subset
 ```
