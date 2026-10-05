@@ -3,6 +3,48 @@
 Newest first. Each entry: what was run, the result, what surprised us, what it changes.
 Raw numbers live in `results/ledger.jsonl`.
 
+## 008 — predict-then-verify search — `results/search_008.log`
+
+14 single-option measurements (each option alone on top of `sink=1 recent=32`, mixed
+calibration) → predicted all 5 × 4 × 4 × 4 = 320 combinations as reference + sum of costs →
+Pareto frontier per serving point → verified 8 frontier configs with real runs.
+
+**Additivity holds in the useful regime and breaks, super-additively, in the aggressive one.**
+
+| verified config | predicted total cost (nats) | measured − predicted (wiki / code) |
+|---|---|---|
+| rot8 + head6 + k3 + v2 | 0.021 | +0.0004 / −0.0002 |
+| k4 + v4 | 0.003 | −0.0005 / −0.0002 |
+| rot8 + head6 + k3 + v3 | 0.012 | −0.0016 / +0.0002 |
+| rgptq4 + head6 + v3 | 0.064 | +0.0013 / +0.0018 |
+| rgptq4 + head8 + k3 + v2 | 0.080 | +0.0050 / +0.0036 |
+| rgptq4 + head4 + k3 + v2 | 0.155 | +0.0042 / +0.0028 |
+| rgptq3 + head4 + k4 + v2 | 0.49 | **+0.034 / +0.029** |
+| rgptq3 + head4 + k2 + v2 | 0.52 | **+0.042 / +0.037** |
+
+- Up to ~0.15 nats of total degradation, predictions are within 0.005 nats (0.5% perplexity),
+  which is at the level of run-to-run noise. 14 runs replace 320.
+- Beyond that, errors compound: about +7–8% extra loss on top of the sum at ~0.5 nats. Tricks stop
+  being independent once the model is already badly damaged; a degraded model is less robust to
+  each additional perturbation.
+- **The best order depends on the serving point.** At 4k, batch 1 the frontier compresses weights and
+  head first and KV last (keys barely appear). At 32k, batch 8 it compresses KV first:
+  `keys@4 + values@4` alone gives ×2.25 for +0.003 nats, before weights are touched. A single
+  "best config" doesn't exist; the right stack is a function of the workload.
+- head rtn@6 shows up on most frontier points: nearly free (+0.0015 nats) and cheaper than going
+  from 8 to 6 bits in the decoder layers.
+
+### Verified frontier (Qwen2.5-0.5B, fp16 = 16.14 / 4.77)
+
+| config (+ sink=1 recent=32) | wiki | code | 4k b1 | 32k b8 |
+|---|---|---|---|---|
+| keys qa-wf-gs@4 values tok@4/64 | 16.19 | 4.77 | ×1.04 | ×2.25 |
+| w rot8 + head6 + k3 + v3 | 16.30 | 4.81 | ×2.13 | ×3.64 |
+| w rot8 + head6 + k3 + v2 | 16.48 | 4.86 | ×2.14 | ×3.98 |
+| w rgptq4 + head6 + v3 | 17.22 | 4.99 | ×3.17 | ×1.86 |
+| w rgptq4 + head8 + k3 + v2 | 17.57 | 5.07 | ×3.05 | ×4.61 |
+| w rgptq4 + head4 + k3 + v2 | 18.92 | 5.29 | ×3.82 | ×4.99 |
+
 ## 007 — mixed-domain calibration — `results/sweep_007_calibmix.log`
 
 Same stack; calibration = 8 WikiText-2 train + 8 Python stdlib sequences (files disjoint from the
