@@ -31,6 +31,9 @@ p.add_argument("--spec", default="")
 p.add_argument("--model", default="Qwen/Qwen2.5-0.5B")
 p.add_argument("--seq", type=int, default=512)
 p.add_argument("--n-calib", type=int, default=16)
+p.add_argument("--calib", default="wiki", choices=["wiki", "mix"],
+               help="wiki: WikiText-2 train; mix: half WikiText-2 train, half Python stdlib files "
+                    "disjoint from the code eval set")
 p.add_argument("--n-eval", type=int, default=32)
 p.add_argument("--ablate", action="store_true", help="also run the spec with each trick removed")
 p.add_argument("--note", default="")
@@ -47,10 +50,16 @@ def chunks(text, n):
 
 
 wiki = load_dataset("Salesforce/wikitext", "wikitext-2-raw-v1")
-CALIB = chunks("\n".join(wiki["train"]["text"][:20000]), args.n_calib)
+STDLIB = sorted(glob.glob("/usr/lib/python3.11/*.py"))  # [:60] is the code eval set, [60:] calibration only
+if args.calib == "wiki":
+    CALIB = chunks("\n".join(wiki["train"]["text"][:20000]), args.n_calib)
+else:
+    h = args.n_calib // 2
+    CALIB = torch.cat([chunks("\n".join(wiki["train"]["text"][:20000]), args.n_calib - h),
+                       chunks("\n".join(open(f).read() for f in STDLIB[60:160]), h)])
 EVALS = {
     "wiki": chunks("\n".join(wiki["test"]["text"]), args.n_eval),
-    "code": chunks("\n".join(open(f).read() for f in sorted(glob.glob("/usr/lib/python3.11/*.py"))[:60]),
+    "code": chunks("\n".join(open(f).read() for f in STDLIB[:60]),
                    args.n_eval),
 }
 
@@ -156,7 +165,7 @@ def run(spec):
         S["store"] = {}
     S["mode"] = "eval"
     res = {"time": time.strftime("%Y-%m-%d %H:%M:%S"), "git": git_sha(), "model": args.model,
-           "spec": spec, "n_calib": args.n_calib, "n_eval": args.n_eval, "seq": args.seq, "note": args.note}
+           "spec": spec, "calib": args.calib, "n_calib": args.n_calib, "n_eval": args.n_eval, "seq": args.seq, "note": args.note}
     for name, ids in EVALS.items():
         nll = np.array(seq_nll(model, ids))
         se = nll.std(ddof=1) / math.sqrt(len(nll))
