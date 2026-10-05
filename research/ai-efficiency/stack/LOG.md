@@ -3,6 +3,21 @@
 Newest first. Each entry: what was run, the result, what surprised us, what it changes.
 Raw numbers live in `results/ledger.jsonl`.
 
+## 009 — literature check of findings 002–008 (before claiming anything)
+
+| our finding | prior work | verdict |
+|---|---|---|
+| trick costs add up, compound beyond ~0.15 nats | additive sensitivity is the standard assumption of mixed-precision search (HAWQ, HAWQ-V2); [Saturation Makes Quantization Error Additive (2607.12266)](https://arxiv.org/html/2607.12266v1) studies when it holds and finds saturation-driven interactions across layers | known at layer level; our cross-trick version is a small extension at most |
+| joint search over weight + KV compression, workload-dependent best config | [KV Pareto (EACL 2026 industry)](https://arxiv.org/abs/2512.01953): Pareto-optimal KV quantization × AWQ weights × chunked prefill; [KV-COBRA](https://arxiv.org/html/2609.24298), [JoLT](https://arxiv.org/pdf/2607.12550) for joint KV allocation | known |
+| GPTQ moves error onto uncalibrated domains; mixed calibration fixes it | [Williams & Aletras, calibration data impact (2311.09755)](https://arxiv.org/pdf/2311.09755v2); [Quantization Hurts Reasoning? (2504.04823)](https://arxiv.org/pdf/2504.04823): GPTQ is the method most sensitive to calibration domain; mixed-domain calibration recommended | known |
+| fp16 output head is a hidden decode bottleneck in small, large-vocab models | [Vector-index output embeddings (2608.27460)](https://arxiv.org/pdf/2608.27460), [ARCHead (2608.02703)](https://arxiv.org/pdf/2608.02703), [VocabTailor (2508.15229)](https://arxiv.org/pdf/2508.15229), [SLMs at the edge (ACL 2025)](https://aclanthology.org/2025.acl-long.718.pdf) | known |
+| planned: compressed model as its own speculative draft | [QuantSpec (2502.10424)](https://arxiv.org/abs/2502.10424): 4-bit weights + hierarchical 4-bit KV self-draft, >90% acceptance, ~2.5×; [QSpec (2410.11305)](https://arxiv.org/abs/2410.11305); [SpecKV (2605.02888)](https://arxiv.org/pdf/2605.02888) studies compression level × speculation length | known; not run |
+
+**Conclusion:** the system reproduces known results reliably, which validates it as a tool, but
+nothing found so far is new. Post-training compression of open LLMs is one of the most crowded
+areas in ML (dozens of papers per month in 2026). Generic stacking of known tricks on a 0.5B model
+won't produce novelty; it needs either a new mechanism or a less crowded target.
+
 ## 008 — predict-then-verify search — `results/search_008.log`
 
 14 single-option measurements (each option alone on top of `sink=1 recent=32`, mixed
