@@ -20,11 +20,11 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModelForCausalLM, AutoTokenizer, AttentionInterface
 from datasets import load_dataset
-from tricks import Stack, FP_BITS
+from tricks import Stack
+from bytes_model import model_sizes, bytes_report
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LEDGER = os.path.join(HERE, "results", "ledger.jsonl")
-SERVING_POINTS = {"ctx4k_b1": (4096, 1), "ctx32k_b8": (32768, 8)}
 
 p = argparse.ArgumentParser()
 p.add_argument("--spec", default="")
@@ -112,30 +112,6 @@ def seq_nll(model, ids):
     return [float(model(x[None], labels=x[None]).loss) for x in ids]
 
 
-def bytes_model(st, model):
-    cfg = model.config
-    L, Hkv = cfg.num_hidden_layers, cfg.num_key_value_heads
-    D = getattr(cfg, "head_dim", None) or cfg.hidden_size // cfg.num_attention_heads
-    lin = sum(m.weight.numel() for layer in model.model.layers for m in layer.modules()
-              if isinstance(m, torch.nn.Linear))
-    head = model.lm_head.weight.numel()  # read in full every decode step for the logits
-    # input embedding: only one row per token is read, unless it is a separate untied matrix (still ~0 traffic)
-    other = sum(p.numel() for p in model.parameters()) - lin - head
-    other_traffic = sum(p.numel() for n, p in model.named_parameters() if "norm" in n or "bias" in n)
-    out = {}
-    for name, (C, Bt) in SERVING_POINTS.items():
-        def step_bytes(s):
-            w = lin * s.weight_bits() / 8 + head * s.head_bits() / 8 + other_traffic * FP_BITS / 8
-            n = min(C, s.sink + s.window) if s.window else C
-            n_fp = min(n, s.sink + s.recent)
-            per_tok_q = L * Hkv * D * (s.key_bits(D) + s.value_bits()) / 8
-            per_tok_fp = L * Hkv * D * 2 * FP_BITS / 8
-            return w + Bt * (n_fp * per_tok_fp + (n - n_fp) * per_tok_q)
-        b, b0 = step_bytes(st), step_bytes(Stack())
-        out[name] = {"MB_per_step": b / 2 ** 20, "ceiling_speedup": b0 / b}
-    return out
-
-
 def git_sha():
     try:
         return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=HERE).decode().strip()
@@ -172,7 +148,7 @@ def run(spec):
         res[name] = {"ppl": float(math.exp(nll.mean())),
                      "ppl_ci95": [float(math.exp(nll.mean() - 1.96 * se)), float(math.exp(nll.mean() + 1.96 * se))],
                      "nll": [round(float(x), 5) for x in nll]}
-    res["bytes"] = bytes_model(st, model)
+    res["bytes"] = bytes_report(st, model_sizes(model))
     res["seconds"] = round(time.time() - t0, 1)
     os.makedirs(os.path.dirname(LEDGER), exist_ok=True)
     with open(LEDGER, "a") as f:

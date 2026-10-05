@@ -3,6 +3,27 @@
 Newest first. Each entry: what was run, the result, what surprised us, what it changes.
 Raw numbers live in `results/ledger.jsonl`.
 
+## 007 — mixed-domain calibration — `results/sweep_007_calibmix.log`
+
+Same stack; calibration = 8 WikiText-2 train + 8 Python stdlib sequences (files disjoint from the
+code eval set) instead of 16 WikiText-2. Wiki-only → mixed:
+
+| weights | wiki | code |
+|---|---|---|
+| rot@4/128 (control, no weight calibration) | 18.72 → 18.72 | 5.43 → 5.40 |
+| gptq@4/128 | 18.36 → 18.83 | 5.93 → 5.31 |
+| **rgptq@4/128** | 17.30 → **17.33** | 5.29 → **5.00** |
+| gptq@3/128 | 34.05 → 40.77 | 29.02 → 10.37 |
+| rgptq@3/128 | 21.99 → 24.58 | 9.93 → 6.24 |
+
+- Calibration domain decides where GPTQ puts its error: plain GPTQ trades Wikipedia for code
+  almost one-for-one. With rotation the trade nearly disappears at 4 bits: mixed calibration fixes
+  code (5.29 → 5.00) at no Wikipedia cost.
+- The key coder's calibration change has no measurable effect (control row).
+- **Default from here: `--calib mix`.** Any calibrated trick needs the evaluation domains in its
+  calibration set, or a second-domain test to catch the damage.
+- Next: predict-then-verify search over weights × head × keys × values (`search.py`, 008).
+
 ## 006 — GPTQ weights — `results/sweep_006_gptq.log`
 
 Head rtn@8/128 and KV stack fixed. Calibration: 16 × 512 WikiText-2 train tokens.
