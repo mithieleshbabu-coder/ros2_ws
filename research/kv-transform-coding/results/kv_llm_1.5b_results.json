@@ -1,0 +1,184 @@
+[
+ {
+  "eval": "wiki",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 14.301135478954832,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "code",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 3.675452898478607,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 2,
+  "ppl": 18.694966309533406,
+  "attn_err": 0.43316864621426376
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 2,
+  "ppl": 4.876716086274995,
+  "attn_err": 0.43024400621652603
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 2,
+  "ppl": 17.586630484566793,
+  "attn_err": 0.3462413971179298
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 2,
+  "ppl": 4.589524992385232,
+  "attn_err": 0.348149738806699
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 2,
+  "ppl": 18.282177979337714,
+  "attn_err": 0.332574187046183
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 2,
+  "ppl": 4.269581035997992,
+  "attn_err": 0.30577950791588854
+ },
+ {
+  "eval": "wiki",
+  "method": "kbasis-qw",
+  "bits": 2,
+  "ppl": 16.93758011495323,
+  "attn_err": 0.28818958179493037
+ },
+ {
+  "eval": "code",
+  "method": "kbasis-qw",
+  "bits": 2,
+  "ppl": 4.323640682287247,
+  "attn_err": 0.303516087920538
+ },
+ {
+  "eval": "wiki",
+  "method": "qbasis-qw",
+  "bits": 2,
+  "ppl": 19.443046135544524,
+  "attn_err": 0.32295608014932703
+ },
+ {
+  "eval": "code",
+  "method": "qbasis-qw",
+  "bits": 2,
+  "ppl": 4.238316311622137,
+  "attn_err": 0.26953712491584675
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 19.992167777085935,
+  "attn_err": 0.2707112907165928
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 4.3589330110436455,
+  "attn_err": 0.2829028157783406
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 3,
+  "ppl": 14.731774230194286,
+  "attn_err": 0.16289277487833584
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 3,
+  "ppl": 3.824933842589598,
+  "attn_err": 0.16496181335034116
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 3,
+  "ppl": 14.89738957510114,
+  "attn_err": 0.18137470579573087
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 3,
+  "ppl": 3.854054278241896,
+  "attn_err": 0.1838502140183534
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 3,
+  "ppl": 15.703833885835506,
+  "attn_err": 0.23610355515432144
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 3,
+  "ppl": 3.877251282865734,
+  "attn_err": 0.20107818707557662
+ },
+ {
+  "eval": "wiki",
+  "method": "kbasis-qw",
+  "bits": 3,
+  "ppl": 14.863604900885086,
+  "attn_err": 0.17709977086633444
+ },
+ {
+  "eval": "code",
+  "method": "kbasis-qw",
+  "bits": 3,
+  "ppl": 3.8391202752378852,
+  "attn_err": 0.17773127562499472
+ },
+ {
+  "eval": "wiki",
+  "method": "qbasis-qw",
+  "bits": 3,
+  "ppl": 18.177568371042224,
+  "attn_err": 0.23356610839255154
+ },
+ {
+  "eval": "code",
+  "method": "qbasis-qw",
+  "bits": 3,
+  "ppl": 3.772877166113534,
+  "attn_err": 0.1346867546838309
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 19.40931216197596,
+  "attn_err": 0.19041026659709
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 3.8376615361884343,
+  "attn_err": 0.1648462202533015
+ }
+]

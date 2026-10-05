@@ -1,0 +1,14 @@
+weights=rtn@4/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  19.647  code  5.755  ceiling x2.19 (4k,b1)  x3.68 (32k,b8)
+(fp baseline)                wiki  16.135  code  4.767  ceiling x1.00 (4k,b1)  x1.00 (32k,b8)
+
+leave-one-out: what each trick costs in quality (paired NLL diff vs full stack, 95% CI)
+without weights=rtn@4/128    wiki  16.367  code  4.810  ceiling x1.04 (4k,b1)  x2.52 (32k,b8)
+                             cost of weights=rtn@4/128: wiki +0.1827±0.0139  code +0.1794±0.0128 nats/token
+without keys=qa-wf-gs@3      wiki  19.438  code  5.700  ceiling x2.10 (4k,b1)  x1.73 (32k,b8)
+                             cost of keys=qa-wf-gs@3: wiki +0.0107±0.0036  code +0.0096±0.0027 nats/token
+without values=tok@3/64      wiki  19.590  code  5.744  ceiling x2.11 (4k,b1)  x1.75 (32k,b8)
+                             cost of values=tok@3/64: wiki +0.0029±0.0028  code +0.0018±0.0017 nats/token
+without sink=1               wiki  23.604  code  6.650  ceiling x2.19 (4k,b1)  x3.68 (32k,b8)
+                             cost of sink=1: wiki -0.1835±0.0137  code -0.1446±0.0150 nats/token
+without recent=32            wiki  21.004  code  6.202  ceiling x2.19 (4k,b1)  x3.69 (32k,b8)
+                             cost of recent=32: wiki -0.0668±0.0075  code -0.0749±0.0104 nats/token

@@ -1,0 +1,6 @@
+wiki  fp32               ppl=  14.301 (71s)
+code  fp32               ppl=   3.675 (70s)
+wiki  qa-wf-gs   b=2  ppl=  15.878 attn-err=0.2496 (72s)
+code  qa-wf-gs   b=2  ppl=   4.496 attn-err=0.2998 (73s)
+wiki  qa-wf-gs   b=3  ppl=  14.854 attn-err=0.1705 (73s)
+code  qa-wf-gs   b=3  ppl=   3.872 attn-err=0.1715 (72s)

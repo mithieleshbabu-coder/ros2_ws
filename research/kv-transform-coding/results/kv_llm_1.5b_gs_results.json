@@ -1,0 +1,44 @@
+[
+ {
+  "eval": "wiki",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 14.301135478954832,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "code",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 3.675452898478607,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 2,
+  "ppl": 15.878231503329776,
+  "attn_err": 0.24960306399900997
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 2,
+  "ppl": 4.495942610958698,
+  "attn_err": 0.29978824952351196
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 3,
+  "ppl": 14.853637876627968,
+  "attn_err": 0.17045203855793392
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 3,
+  "ppl": 3.872179714207225,
+  "attn_err": 0.17148674838244915
+ }
+]

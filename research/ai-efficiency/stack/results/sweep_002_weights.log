@@ -1,0 +1,5 @@
+weights=rtn@8/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  16.395  code  4.813  ceiling x1.59 (4k,b1)  x3.18 (32k,b8)
+weights=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  16.577  code  4.867  ceiling x1.84 (4k,b1)  x3.41 (32k,b8)
+weights=rtn@5/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  17.236  code  5.066  ceiling x2.00 (4k,b1)  x3.54 (32k,b8)
+weights=rtn@4/32 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  18.053  code  5.286  ceiling x2.05 (4k,b1)  x3.57 (32k,b8)
+weights=rtn@3/32 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  30.014  code  8.263  ceiling x2.25 (4k,b1)  x3.71 (32k,b8)

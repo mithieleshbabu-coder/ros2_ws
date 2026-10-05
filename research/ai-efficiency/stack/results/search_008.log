@@ -1,0 +1,135 @@
+measuring sink=1 recent=32
+sink=1 recent=32             wiki  16.135  code  4.767  ceiling x1.00 (4k,b1)  x1.00 (32k,b8)
+measuring weights=rot@8/128 sink=1 recent=32
+weights=rot@8/128 sink=1 recent=32 wiki  16.147  code  4.768  ceiling x1.50 (4k,b1)  x1.09 (32k,b8)
+measuring weights=rot@5/128 sink=1 recent=32
+weights=rot@5/128 sink=1 recent=32 wiki  16.664  code  4.949  ceiling x1.86 (4k,b1)  x1.13 (32k,b8)
+measuring weights=rgptq@4/128 sink=1 recent=32
+weights=rgptq@4/128 sink=1 recent=32 wiki  17.154  code  4.964  ceiling x2.02 (4k,b1)  x1.14 (32k,b8)
+measuring weights=rgptq@3/128 sink=1 recent=32
+weights=rgptq@3/128 sink=1 recent=32 wiki  24.115  code  6.203  ceiling x2.22 (4k,b1)  x1.16 (32k,b8)
+measuring head=rtn@8/128 sink=1 recent=32
+head=rtn@8/128 sink=1 recent=32 wiki  16.137  code  4.768  ceiling x1.15 (4k,b1)  x1.03 (32k,b8)
+measuring head=rtn@6/128 sink=1 recent=32
+head=rtn@6/128 sink=1 recent=32 wiki  16.159  code  4.781  ceiling x1.19 (4k,b1)  x1.04 (32k,b8)
+measuring head=rtn@4/128 sink=1 recent=32
+head=rtn@4/128 sink=1 recent=32 wiki  17.393  code  4.981  ceiling x1.24 (4k,b1)  x1.05 (32k,b8)
+measuring keys=qa-wf-gs@4 sink=1 recent=32
+keys=qa-wf-gs@4 sink=1 recent=32 wiki  16.184  code  4.772  ceiling x1.02 (4k,b1)  x1.39 (32k,b8)
+measuring keys=qa-wf-gs@3 sink=1 recent=32
+keys=qa-wf-gs@3 sink=1 recent=32 wiki  16.271  code  4.786  ceiling x1.02 (4k,b1)  x1.44 (32k,b8)
+measuring keys=qa-wf-gs@2 sink=1 recent=32
+keys=qa-wf-gs@2 sink=1 recent=32 wiki  16.652  code  4.848  ceiling x1.02 (4k,b1)  x1.49 (32k,b8)
+measuring values=tok@4/64 sink=1 recent=32
+values=tok@4/64 sink=1 recent=32 wiki  16.144  code  4.768  ceiling x1.02 (4k,b1)  x1.38 (32k,b8)
+measuring values=tok@3/64 sink=1 recent=32
+values=tok@3/64 sink=1 recent=32 wiki  16.155  code  4.773  ceiling x1.02 (4k,b1)  x1.43 (32k,b8)
+measuring values=tok@2/64 sink=1 recent=32
+values=tok@2/64 sink=1 recent=32 wiki  16.302  code  4.830  ceiling x1.02 (4k,b1)  x1.48 (32k,b8)
+
+predicted frontier at ctx4k_b1 (mean ppl wiki/code from predicted NLL):
+  x 1.00  wiki  16.135  code  4.767  sink=1 recent=32
+  x 1.15  wiki  16.137  code  4.768  head=rtn@8/128 sink=1 recent=32
+  x 1.50  wiki  16.147  code  4.768  weights=rot@8/128 sink=1 recent=32
+  x 1.85  wiki  16.149  code  4.769  weights=rot@8/128 head=rtn@8/128 sink=1 recent=32
+  x 1.92  wiki  16.158  code  4.770  weights=rot@8/128 head=rtn@8/128 values=tok@4/64 sink=1 recent=32
+  x 1.92  wiki  16.169  code  4.774  weights=rot@8/128 head=rtn@8/128 values=tok@3/64 sink=1 recent=32
+  x 1.97  wiki  16.171  code  4.781  weights=rot@8/128 head=rtn@6/128 sink=1 recent=32
+  x 2.04  wiki  16.180  code  4.782  weights=rot@8/128 head=rtn@6/128 values=tok@4/64 sink=1 recent=32
+  x 2.05  wiki  16.191  code  4.787  weights=rot@8/128 head=rtn@6/128 values=tok@3/64 sink=1 recent=32
+  x 2.12  wiki  16.230  code  4.787  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 2.13  wiki  16.241  code  4.792  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 2.13  wiki  16.327  code  4.805  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 2.13  wiki  16.389  code  4.850  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+  x 2.14  wiki  16.476  code  4.864  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 2.44  wiki  16.666  code  4.950  weights=rot@5/128 head=rtn@8/128 sink=1 recent=32
+  x 2.55  wiki  16.676  code  4.951  weights=rot@5/128 head=rtn@8/128 values=tok@4/64 sink=1 recent=32
+  x 2.56  wiki  16.686  code  4.955  weights=rot@5/128 head=rtn@8/128 values=tok@3/64 sink=1 recent=32
+  x 2.65  wiki  16.688  code  4.963  weights=rot@5/128 head=rtn@6/128 sink=1 recent=32
+  x 2.78  wiki  16.698  code  4.963  weights=rot@5/128 head=rtn@6/128 values=tok@4/64 sink=1 recent=32
+  x 2.79  wiki  16.709  code  4.968  weights=rot@5/128 head=rtn@6/128 values=tok@3/64 sink=1 recent=32
+  x 2.92  wiki  16.749  code  4.969  weights=rot@5/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 2.93  wiki  16.760  code  4.973  weights=rot@5/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 2.95  wiki  16.849  code  4.987  weights=rot@5/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 2.95  wiki  16.913  code  5.033  weights=rot@5/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+  x 2.99  wiki  17.180  code  4.978  weights=rgptq@4/128 head=rtn@6/128 sink=1 recent=32
+  x 3.16  wiki  17.190  code  4.979  weights=rgptq@4/128 head=rtn@6/128 values=tok@4/64 sink=1 recent=32
+  x 3.17  wiki  17.201  code  4.984  weights=rgptq@4/128 head=rtn@6/128 values=tok@3/64 sink=1 recent=32
+  x 3.34  wiki  17.243  code  4.984  weights=rgptq@4/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 3.36  wiki  17.254  code  4.989  weights=rgptq@4/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 3.38  wiki  17.346  code  5.003  weights=rgptq@4/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 3.38  wiki  17.411  code  5.050  weights=rgptq@4/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+  x 3.39  wiki  17.504  code  5.064  weights=rgptq@4/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 3.41  wiki  17.914  code  5.129  weights=rgptq@4/128 head=rtn@6/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 3.52  wiki  18.503  code  5.188  weights=rgptq@4/128 head=rtn@4/128 values=tok@4/64 sink=1 recent=32
+  x 3.54  wiki  18.515  code  5.193  weights=rgptq@4/128 head=rtn@4/128 values=tok@3/64 sink=1 recent=32
+  x 3.75  wiki  18.560  code  5.193  weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 3.78  wiki  18.572  code  5.198  weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 3.80  wiki  18.671  code  5.213  weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 3.80  wiki  18.742  code  5.261  weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+  x 3.82  wiki  18.841  code  5.276  weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 3.84  wiki  19.283  code  5.344  weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 3.90  wiki  24.239  code  6.228  weights=rgptq@3/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 3.93  wiki  24.255  code  6.234  weights=rgptq@3/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 3.95  wiki  24.384  code  6.252  weights=rgptq@3/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 3.95  wiki  24.476  code  6.310  weights=rgptq@3/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+  x 3.97  wiki  24.606  code  6.328  weights=rgptq@3/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 4.00  wiki  25.183  code  6.410  weights=rgptq@3/128 head=rtn@6/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 4.15  wiki  26.011  code  6.483  weights=rgptq@3/128 head=rtn@4/128 values=tok@4/64 sink=1 recent=32
+  x 4.18  wiki  26.028  code  6.489  weights=rgptq@3/128 head=rtn@4/128 values=tok@3/64 sink=1 recent=32
+  x 4.48  wiki  26.091  code  6.489  weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 4.51  wiki  26.108  code  6.495  weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 4.54  wiki  26.247  code  6.514  weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 4.54  wiki  26.346  code  6.574  weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+  x 4.57  wiki  26.487  code  6.593  weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 4.60  wiki  27.108  code  6.678  weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+
+predicted frontier at ctx32k_b8 (mean ppl wiki/code from predicted NLL):
+  x 1.00  wiki  16.135  code  4.767  sink=1 recent=32
+  x 1.03  wiki  16.137  code  4.768  head=rtn@8/128 sink=1 recent=32
+  x 1.38  wiki  16.144  code  4.768  values=tok@4/64 sink=1 recent=32
+  x 1.44  wiki  16.146  code  4.769  head=rtn@8/128 values=tok@4/64 sink=1 recent=32
+  x 1.56  wiki  16.156  code  4.769  weights=rot@8/128 values=tok@4/64 sink=1 recent=32
+  x 1.64  wiki  16.158  code  4.770  weights=rot@8/128 head=rtn@8/128 values=tok@4/64 sink=1 recent=32
+  x 1.70  wiki  16.169  code  4.774  weights=rot@8/128 head=rtn@8/128 values=tok@3/64 sink=1 recent=32
+  x 2.25  wiki  16.194  code  4.773  keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 2.42  wiki  16.196  code  4.774  head=rtn@8/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 2.76  wiki  16.206  code  4.774  weights=rot@8/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 3.02  wiki  16.208  code  4.775  weights=rot@8/128 head=rtn@8/128 keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+  x 3.26  wiki  16.219  code  4.779  weights=rot@8/128 head=rtn@8/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 3.35  wiki  16.241  code  4.792  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@3/64 sink=1 recent=32
+  x 3.53  wiki  16.305  code  4.793  weights=rot@8/128 head=rtn@8/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 3.64  wiki  16.327  code  4.805  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+  x 3.64  wiki  16.389  code  4.850  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+  x 3.86  wiki  16.454  code  4.851  weights=rot@8/128 head=rtn@8/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 3.98  wiki  16.476  code  4.864  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 4.25  wiki  16.839  code  4.914  weights=rot@8/128 head=rtn@8/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 4.40  wiki  16.862  code  4.926  weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 4.56  wiki  17.003  code  5.048  weights=rot@5/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 4.61  wiki  17.480  code  5.051  weights=rgptq@4/128 head=rtn@8/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+  x 4.92  wiki  17.378  code  5.100  weights=rot@5/128 head=rtn@8/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 5.12  wiki  17.402  code  5.113  weights=rot@5/128 head=rtn@6/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 5.19  wiki  17.890  code  5.116  weights=rgptq@4/128 head=rtn@8/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 5.41  wiki  17.914  code  5.129  weights=rgptq@4/128 head=rtn@6/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 5.66  wiki  19.283  code  5.344  weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 5.74  wiki  25.183  code  6.410  weights=rgptq@3/128 head=rtn@6/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+  x 6.02  wiki  27.108  code  6.678  weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32
+
+verifying (predicted vs measured mean NLL, nats/token):
+  wiki pred 2.7810 meas 2.7810 (+0.0000)   code pred 1.5618 meas 1.5618 (+0.0000)   sink=1 recent=32
+weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32 wiki  16.483  code  4.862  ceiling x2.14 (4k,b1)  x3.98 (32k,b8)
+  wiki pred 2.8019 meas 2.8023 (+0.0004)   code pred 1.5818 meas 1.5815 (-0.0002)   weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+weights=rgptq@4/128 head=rtn@6/128 values=tok@3/64 sink=1 recent=32 wiki  17.223  code  4.993  ceiling x3.17 (4k,b1)  x1.86 (32k,b8)
+  wiki pred 2.8450 meas 2.8462 (+0.0013)   code pred 1.6062 meas 1.6080 (+0.0018)   weights=rgptq@4/128 head=rtn@6/128 values=tok@3/64 sink=1 recent=32
+weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32 wiki  18.920  code  5.291  ceiling x3.82 (4k,b1)  x4.99 (32k,b8)
+  wiki pred 2.9361 meas 2.9402 (+0.0042)   code pred 1.6632 meas 1.6660 (+0.0028)   weights=rgptq@4/128 head=rtn@4/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32 wiki  27.262  code  6.766  ceiling x4.54 (4k,b1)  x4.68 (32k,b8)
+  wiki pred 3.2713 meas 3.3055 (+0.0342)   code pred 1.8831 meas 1.9119 (+0.0288)   weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@4 values=tok@2/64 sink=1 recent=32
+keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32 wiki  16.186  code  4.772  ceiling x1.04 (4k,b1)  x2.25 (32k,b8)
+  wiki pred 2.7846 meas 2.7842 (-0.0005)   code pred 1.5630 meas 1.5627 (-0.0002)   keys=qa-wf-gs@4 values=tok@4/64 sink=1 recent=32
+weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32 wiki  16.301  code  4.807  ceiling x2.13 (4k,b1)  x3.64 (32k,b8)
+  wiki pred 2.7928 meas 2.7912 (-0.0016)   code pred 1.5697 meas 1.5700 (+0.0002)   weights=rot@8/128 head=rtn@6/128 keys=qa-wf-gs@3 values=tok@3/64 sink=1 recent=32
+weights=rgptq@4/128 head=rtn@8/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32 wiki  17.567  code  5.069  ceiling x3.05 (4k,b1)  x4.61 (32k,b8)
+  wiki pred 2.8611 meas 2.8660 (+0.0050)   code pred 1.6196 meas 1.6231 (+0.0036)   weights=rgptq@4/128 head=rtn@8/128 keys=qa-wf-gs@3 values=tok@2/64 sink=1 recent=32
+weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32 wiki  28.280  code  6.926  ceiling x4.60 (4k,b1)  x6.02 (32k,b8)
+  wiki pred 3.2998 meas 3.3422 (+0.0423)   code pred 1.8988 meas 1.9353 (+0.0365)   weights=rgptq@3/128 head=rtn@4/128 keys=qa-wf-gs@2 values=tok@2/64 sink=1 recent=32

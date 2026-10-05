@@ -1,0 +1,268 @@
+[
+ {
+  "eval": "wiki",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 16.134795372568664,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "code",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 4.767159076848616,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 2,
+  "ppl": 55.23960543610568,
+  "attn_err": 0.5756169133043537
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 2,
+  "ppl": 11.976791963812387,
+  "attn_err": 0.5706374811319014
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-mse",
+  "bits": 2,
+  "ppl": 1153.2753178461471,
+  "attn_err": 0.7515951353125274
+ },
+ {
+  "eval": "code",
+  "method": "turbo-mse",
+  "bits": 2,
+  "ppl": 497.5533513699206,
+  "attn_err": 0.7683700653724372
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 2,
+  "ppl": 271.1427559188388,
+  "attn_err": 0.5208039895320932
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 2,
+  "ppl": 54.02398920084927,
+  "attn_err": 0.5352064711817851
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 2,
+  "ppl": 68.19955686159942,
+  "attn_err": 1.1026214129136254
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 2,
+  "ppl": 14.109518803598412,
+  "attn_err": 1.0417626224613439
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 44.591097316854054,
+  "attn_err": 0.7731524020588646
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 10.229142111085729,
+  "attn_err": 0.754524079655918
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 2,
+  "ppl": 20.89017440918023,
+  "attn_err": 0.4377572027345498
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 2,
+  "ppl": 6.522031303833343,
+  "attn_err": 0.41929999087005854
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 3,
+  "ppl": 17.451787086270667,
+  "attn_err": 0.2206060151802376
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 3,
+  "ppl": 5.189462092546347,
+  "attn_err": 0.2232964780802528
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-mse",
+  "bits": 3,
+  "ppl": 323.1230071178876,
+  "attn_err": 0.41289478765490156
+ },
+ {
+  "eval": "code",
+  "method": "turbo-mse",
+  "bits": 3,
+  "ppl": 139.94635986105507,
+  "attn_err": 0.41964966532153386
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 3,
+  "ppl": 57.349528553206014,
+  "attn_err": 0.32455245036787045
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 3,
+  "ppl": 11.262589520299901,
+  "attn_err": 0.33373463863972574
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 3,
+  "ppl": 53.37270864368461,
+  "attn_err": 0.9481582083972171
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 3,
+  "ppl": 9.933230837466379,
+  "attn_err": 0.9276862177066505
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 45.31213918496045,
+  "attn_err": 0.6717001857662884
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 8.774434490546856,
+  "attn_err": 0.6684650375585383
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 3,
+  "ppl": 19.53183774119035,
+  "attn_err": 0.420312980558568
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 3,
+  "ppl": 5.708566187884259,
+  "attn_err": 0.39230578936015564
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 4,
+  "ppl": 16.348436444561393,
+  "attn_err": 0.0995387594642428
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 4,
+  "ppl": 4.8352239016880345,
+  "attn_err": 0.10051535514260952
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-mse",
+  "bits": 4,
+  "ppl": 151.63686355338544,
+  "attn_err": 0.2673036237247288
+ },
+ {
+  "eval": "code",
+  "method": "turbo-mse",
+  "bits": 4,
+  "ppl": 36.64999892426512,
+  "attn_err": 0.27618731492354226
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 4,
+  "ppl": 22.833057638379213,
+  "attn_err": 0.18573996513926735
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 4,
+  "ppl": 5.930219250090473,
+  "attn_err": 0.18697351578157395
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 4,
+  "ppl": 38.15975019501075,
+  "attn_err": 0.8286039931311583
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 4,
+  "ppl": 7.752406535905005,
+  "attn_err": 0.8120926615471641
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 4,
+  "ppl": 45.39348906720376,
+  "attn_err": 0.6141294139670208
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 4,
+  "ppl": 8.379525054033893,
+  "attn_err": 0.6136115766324414
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 4,
+  "ppl": 19.202962517995406,
+  "attn_err": 0.4103681562410202
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 4,
+  "ppl": 5.58016598468574,
+  "attn_err": 0.385905134336402
+ }
+]

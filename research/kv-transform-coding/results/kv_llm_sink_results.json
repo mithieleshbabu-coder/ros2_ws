@@ -1,0 +1,226 @@
+[
+ {
+  "eval": "wiki",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 16.134795372568664,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "code",
+  "method": "fp32",
+  "bits": 32,
+  "ppl": 4.767159076848616,
+  "attn_err": 0.0
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 2,
+  "ppl": 36.78473206438789,
+  "attn_err": 0.5178937282568464
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 2,
+  "ppl": 9.154317855314366,
+  "attn_err": 0.5135643166334679
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 2,
+  "ppl": 199.89103788937928,
+  "attn_err": 0.43953940900973976
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 2,
+  "ppl": 41.08065296291304,
+  "attn_err": 0.4569093194634964
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 2,
+  "ppl": 19.574678469386324,
+  "attn_err": 0.2636638040809582
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 2,
+  "ppl": 6.127377169181604,
+  "attn_err": 0.3266740709077567
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 17.94826515237039,
+  "attn_err": 0.18630493180050203
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 2,
+  "ppl": 5.6759541042286745,
+  "attn_err": 0.26466287614312023
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 2,
+  "ppl": 18.795698725700586,
+  "attn_err": 0.21702344645746052
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 2,
+  "ppl": 5.929170071337907,
+  "attn_err": 0.2951248506239305
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 3,
+  "ppl": 17.141662013049267,
+  "attn_err": 0.19415007151352862
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 3,
+  "ppl": 5.119102240788762,
+  "attn_err": 0.19964341858091453
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 3,
+  "ppl": 46.8364039640596,
+  "attn_err": 0.27522049328157056
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 3,
+  "ppl": 10.514609117411535,
+  "attn_err": 0.2809129674763729
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 3,
+  "ppl": 17.22926794895867,
+  "attn_err": 0.17010293951413283
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 3,
+  "ppl": 5.191867195309154,
+  "attn_err": 0.22261739405803382
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 16.659173274449206,
+  "attn_err": 0.0984668130792367
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 3,
+  "ppl": 5.005006017597752,
+  "attn_err": 0.15502344456035644
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 3,
+  "ppl": 16.881607480439556,
+  "attn_err": 0.11262802079242344
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 3,
+  "ppl": 5.048115514565439,
+  "attn_err": 0.1683922877224783
+ },
+ {
+  "eval": "wiki",
+  "method": "kivi",
+  "bits": 4,
+  "ppl": 16.339310899974762,
+  "attn_err": 0.08850891412779067
+ },
+ {
+  "eval": "code",
+  "method": "kivi",
+  "bits": 4,
+  "ppl": 4.835312812761729,
+  "attn_err": 0.09063372916231553
+ },
+ {
+  "eval": "wiki",
+  "method": "turbo-c",
+  "bits": 4,
+  "ppl": 22.628698492389667,
+  "attn_err": 0.16041099953387553
+ },
+ {
+  "eval": "code",
+  "method": "turbo-c",
+  "bits": 4,
+  "ppl": 5.851716035881083,
+  "attn_err": 0.1633937352647384
+ },
+ {
+  "eval": "wiki",
+  "method": "klt-wf",
+  "bits": 4,
+  "ppl": 16.521668269824644,
+  "attn_err": 0.09143089210071291
+ },
+ {
+  "eval": "code",
+  "method": "klt-wf",
+  "bits": 4,
+  "ppl": 4.903080240604714,
+  "attn_err": 0.13611281593330204
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf",
+  "bits": 4,
+  "ppl": 16.316499137437177,
+  "attn_err": 0.054770367132732645
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf",
+  "bits": 4,
+  "ppl": 4.845800353882782,
+  "attn_err": 0.09245112196852763
+ },
+ {
+  "eval": "wiki",
+  "method": "qa-wf-gs",
+  "bits": 4,
+  "ppl": 16.391881619742374,
+  "attn_err": 0.060969037391866245
+ },
+ {
+  "eval": "code",
+  "method": "qa-wf-gs",
+  "bits": 4,
+  "ppl": 4.850766912063318,
+  "attn_err": 0.09587860113242641
+ }
+]
